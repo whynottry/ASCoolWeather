@@ -28,19 +28,19 @@ public class HttpUtil {
                     connection.setConnectTimeout(8000);
                     connection.setReadTimeout(8000);
                     InputStream in = connection.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    StringBuffer response = new StringBuffer();
-                    String line;
-                    while((line = reader.readLine()) != null){
-                        response.append(line);
-                    }
-                    if(listener != null){
-                        //回调onFinish()方法
-                        listener.onFinish(response.toString());
-                    }
+                    //BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    //StringBuffer response = new StringBuffer();
+                    //String line;
+//                    while((line = reader.readLine()) != null){
+//                        response.append(line);
+//                    }
+//                    if(listener != null){
+//                        //回调onFinish()方法
+//                        listener.onFinish(response.toString());
+//                    }
                 } catch (IOException e) {
                     //回调onError()方法
-                    listener.onError(e);
+                    //listener.onError(e);
                     e.printStackTrace();
                 } finally {
                     if(connection != null){
