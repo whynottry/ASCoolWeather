@@ -1,13 +1,14 @@
 package com.coolweather.app.util;
-
-import java.io.BufferedReader;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Star on 2015/4/9.
@@ -28,16 +29,32 @@ public class HttpUtil {
                     connection.setConnectTimeout(8000);
                     connection.setReadTimeout(8000);
                     InputStream in = connection.getInputStream();
-                    //BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-                    //StringBuffer response = new StringBuffer();
-                    //String line;
-//                    while((line = reader.readLine()) != null){
-//                        response.append(line);
-//                    }
-//                    if(listener != null){
-//                        //回调onFinish()方法
-//                        listener.onFinish(response.toString());
-//                    }
+                    Document document = null;
+
+                    //抽象工厂类
+                    DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
+                    documentBF.setNamespaceAware(true);
+                    //DOM解析器对象
+                    DocumentBuilder documentB = null;
+                    try {
+                        documentB = documentBF.newDocumentBuilder();
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        try {
+                            document = documentB.parse(in);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (SAXException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(listener != null){
+                        //回调onFinish()方法
+                        listener.onFinish(document);
+                    }
                 } catch (IOException e) {
                     //回调onError()方法
                     //listener.onError(e);
@@ -53,7 +70,7 @@ public class HttpUtil {
     }
 
     public interface HttpCallbackListener{
-        void onFinish(String response);
+        void onFinish(Document document);
         void onError(Exception e);
     }
 }

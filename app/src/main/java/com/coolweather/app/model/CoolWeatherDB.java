@@ -40,7 +40,7 @@ public class CoolWeatherDB {
 
     /**
     * 获取CoolWeatherDB实例
-    * Java语言的关键字，可用来给对象和方法或者代码块加锁，
+    * synchronized  Java语言的关键字，可用来给对象和方法或者代码块加锁，
     * 当它锁定一个方法或者一个代码块的时候，同一时刻最多只有一个线程执行这个段代码
     */
     public synchronized static CoolWeatherDB getInstance(Context context){
@@ -122,7 +122,7 @@ public class CoolWeatherDB {
 
     /**
      * 将Country实例存储到数据库
-     */
+     *//*
     public void saveCountry(Country country){
         ContentValues values = new ContentValues();
         values.put("country_name",country.getCountryName());
@@ -130,12 +130,12 @@ public class CoolWeatherDB {
         values.put("city_id",country.getCityId());
 
         db.insert("Country",null,values);
-    }
+    }*/
 
     /**
      * 从数据库读取某城市下的所有县
      */
-    public List<Country> loadCountries(int cityId){
+    /*public List<Country> loadCountries(int cityId){
         List<Country> list = new ArrayList<Country>();
         Cursor cursor = db.query("Country",null,"city_id?",
                 new String[]{String.valueOf(cityId)},null,null,null);
@@ -155,5 +155,5 @@ public class CoolWeatherDB {
             cursor.close();
         }
         return list;
-    }
+    }*/
 }
