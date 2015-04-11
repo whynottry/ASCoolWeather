@@ -2,18 +2,34 @@ package com.coolweather.app.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.coolweather.app.R;
+import com.coolweather.app.model.City;
 import com.coolweather.app.model.CoolWeatherDB;
 import com.coolweather.app.model.Province;
 import com.coolweather.app.util.WeatherUtil;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class ChooseAreaActivity extends Activity {
 
@@ -27,6 +43,8 @@ public class ChooseAreaActivity extends Activity {
             "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx/";
     private static String PROVINCE_CODE_URL = WEATHER_SERVICE_URL
             + "getRegionProvince";
+    private static String CITY_CODE_URL = WEATHER_SERVICE_URL
+            + "getSupportCityString?theRegionCode=";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +58,55 @@ public class ChooseAreaActivity extends Activity {
 
         coolWeatherDB = CoolWeatherDB.getInstance(this);
 
-        WeatherUtil weatherUtil = new WeatherUtil();
+        final WeatherUtil weatherUtil = new WeatherUtil();
 
-        //provinceList = coolWeatherDB.loadProvinces();
+        //省数据存库
+        weatherUtil.getAllProvinceInfo(PROVINCE_CODE_URL,coolWeatherDB,
+                new WeatherUtil.HttpCallbackListener() {
+                    @Override
+                    public void onFinish(InputStream inputStream) {
+                        Document document = null;
 
-        //weatherUtil.getAllProvinceInfo(PROVINCE_CODE_URL,coolWeatherDB);  //省数据存库
+                        //抽象工厂类
+                        DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
+                        documentBF.setNamespaceAware(true);
+                        //DOM解析器对象
+                        DocumentBuilder documentB = null;
+                        try {
+                            documentB = documentBF.newDocumentBuilder();
+                        } catch (ParserConfigurationException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            try {
+                                document = documentB.parse(inputStream);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } catch (SAXException e) {
+                            e.printStackTrace();
+                        }
+                        NodeList nodeList = document.getElementsByTagName("string");
+                        int len = nodeList.getLength();
+                        for(int i = 0; i < len; i++){
+                            Node n = nodeList.item(i);
+                            String result = n.getFirstChild().getNodeValue();
+                            String[] address = result.split(",");
+                            Province province = new Province();
+                            province.setProvincename(address[0]);
+                            province.setProvincecode(address[1]);
+
+                            coolWeatherDB.saveProvince(province);
+                        }
+
+                        Log.d("test", "save db done");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
         provinceList = coolWeatherDB.loadProvinces();
 
         if(provinceList.size() > 0){
@@ -54,8 +116,80 @@ public class ChooseAreaActivity extends Activity {
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
+            Log.d("test", "provinceList size > 0");
+        }else{
+            Log.d("test", "provinceList size = 0");
         }
 
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int index, long l) {
+                final Province province = provinceList.get(index);
+                Toast.makeText(ChooseAreaActivity.this,province.getProvincename(),Toast.LENGTH_LONG).show();
+
+                String cityUrl = CITY_CODE_URL + province.getProvincecode();
+                weatherUtil.getAllProvinceInfo(cityUrl,coolWeatherDB,
+                        new WeatherUtil.HttpCallbackListener() {
+                            @Override
+                            public void onFinish(InputStream inputStream) {
+                                Document doc = null;
+                                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                                dbf.setNamespaceAware(true);
+                                int cityCode = 0;
+                                DocumentBuilder db = null;
+                                try {
+                                    db = dbf.newDocumentBuilder();
+                                } catch (ParserConfigurationException e) {
+                                    e.printStackTrace();
+                                }
+                                try {
+                                    doc = db.parse(inputStream);
+                                } catch (SAXException e) {
+                                    e.printStackTrace();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                NodeList nl = doc.getElementsByTagName("string");    //具体webService相关
+                                int len = nl.getLength();
+                                //dataList.clear();
+                                for(int i = 0; i < len; i++){
+                                    Node n = nl.item(i);
+                                    String result = n.getFirstChild().getNodeValue();
+                                    String[] address = result.split(",");
+
+                                    City city = new City();
+                                    city.setCityName(address[0]);
+                                    city.setCityCode(address[1]);
+                                    city.setProvinceId(province.getProvincecode());
+
+                                    //dataList.add(address[0]);
+
+                                    coolWeatherDB.saveCity(city);
+                                }
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dataList.clear();
+                                        List<City> cities = coolWeatherDB.loadCities(province.getProvincecode());
+                                        int len = cities.size();
+                                        for(int i = 0; i < len; i++){
+                                            dataList.add(cities.get(i).getCityName());
+                                        }
+                                        adapter.notifyDataSetChanged();
+                                        listView.setSelection(0);
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+
+                            }
+                        });
+            }
+        });
 
     }
 

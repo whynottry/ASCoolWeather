@@ -35,6 +35,9 @@ public class WeatherUtil {
             "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx/";
     private static String PROVINCE_CODE_URL = WEATHER_SERVICE_URL
             + "getRegionProvince";
+    private static String CITY_CODE_URL = WEATHER_SERVICE_URL
+            + "getSupportCityString?theRegionCode=";
+
     private static String WEATHER_QUERY_URL = WEATHER_SERVICE_URL
             + "getWeather?theUserID=&theCityCode=";
 
@@ -63,39 +66,7 @@ public class WeatherUtil {
                     }
 
 
-                    Document document = null;
 
-                    //抽象工厂类
-                    DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
-                    documentBF.setNamespaceAware(true);
-                    //DOM解析器对象
-                    DocumentBuilder documentB = null;
-                    try {
-                        documentB = documentBF.newDocumentBuilder();
-                    } catch (ParserConfigurationException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        document = documentB.parse(inputStream);
-                    } catch (SAXException e) {
-                        e.printStackTrace();
-                    }
-                    NodeList nodeList = document.getElementsByTagName("string");
-                    int len = nodeList.getLength();
-                    for(int i = 0; i < len; i++){
-                        Node n = nodeList.item(i);
-                        String result = n.getFirstChild().getNodeValue();
-                        String[] address = result.split(",");
-                        Province province = new Province();
-                        province.setProvincename(address[0]);
-                        province.setProvincecode(address[1]);
-
-                        coolweatherDB.saveProvince(province);
-
-
-                    }
-
-                    Log.d("test","save db done");
                 } catch (IOException e) {
                     //回调onError()方法
                     listener.onError(e);
@@ -106,6 +77,42 @@ public class WeatherUtil {
                     }
                 }
 
+            }
+        }).start();
+    }
+
+    public static void getCityInfoById(final String addressURL,
+                                final CoolWeatherDB coolWeatherDB,
+                                final HttpCallbackListener listener)
+    {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
+
+                try {
+                    URL url = new URL(addressURL);
+                    connection = (HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream inputStream = connection.getInputStream();
+
+                    if(inputStream != null){
+                        listener.onFinish(inputStream);
+                    }
+
+
+
+                } catch (IOException e) {
+                    //回调onError()方法
+                    listener.onError(e);
+                    e.printStackTrace();
+                } finally {
+                    if(connection != null){
+                        connection.disconnect();
+                    }
+                }
             }
         }).start();
     }
