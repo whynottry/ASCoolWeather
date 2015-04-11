@@ -23,6 +23,11 @@ public class ChooseAreaActivity extends Activity {
     private List<String> dataList = new ArrayList<String>();
     private List<Province> provinceList;
 
+    private static String WEATHER_SERVICE_URL =
+            "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx/";
+    private static String PROVINCE_CODE_URL = WEATHER_SERVICE_URL
+            + "getRegionProvince";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +41,10 @@ public class ChooseAreaActivity extends Activity {
         coolWeatherDB = CoolWeatherDB.getInstance(this);
 
         WeatherUtil weatherUtil = new WeatherUtil();
-        weatherUtil.getAllProvinceInfo(coolWeatherDB);  //省数据存库
+
+        //provinceList = coolWeatherDB.loadProvinces();
+
+        //weatherUtil.getAllProvinceInfo(PROVINCE_CODE_URL,coolWeatherDB);  //省数据存库
         provinceList = coolWeatherDB.loadProvinces();
 
         if(provinceList.size() > 0){

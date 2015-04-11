@@ -1,5 +1,11 @@
 package com.coolweather.app.util;
 
+import android.app.Application;
+import android.content.Context;
+import android.os.Message;
+import android.util.Log;
+import android.widget.Toast;
+
 import com.coolweather.app.model.CoolWeatherDB;
 import com.coolweather.app.model.Province;
 
@@ -26,7 +32,7 @@ import javax.xml.parsers.ParserConfigurationException;
 public class WeatherUtil {
     private static String SERVICES_HOST = "www.webxml.com.cn";
     private static String WEATHER_SERVICE_URL =
-            "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx";
+            "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx/";
     private static String PROVINCE_CODE_URL = WEATHER_SERVICE_URL
             + "getRegionProvince";
     private static String WEATHER_QUERY_URL = WEATHER_SERVICE_URL
@@ -36,68 +42,117 @@ public class WeatherUtil {
     /**
      * 解析URL，获得输入对象
      */
-    public static InputStream getSoapInputStream(String url){
-        InputStream inputStream = null;
-        HttpURLConnection connection;
+    public static void getAllProvinceInfo(final String addressURL,
+                                          final CoolWeatherDB coolweatherDB,
+                                          final HttpCallbackListener listener){
+        new Thread(new Runnable(){
+            @Override
+            public void run() {
+                HttpURLConnection connection = null;
 
-        try {
-            URL urlObj = new URL(url);
-            connection = (HttpURLConnection)urlObj.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(8000);
-            connection.setReadTimeout(8000);
-            /*URLConnection urlConn = urlObj.openConnection();
+                try {
+                    URL url = new URL(addressURL);
+                    connection = (HttpURLConnection)url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.setConnectTimeout(8000);
+                    connection.setReadTimeout(8000);
+                    InputStream inputStream = connection.getInputStream();
 
-            //设置通讯的头部消息
-            urlConn.setRequestProperty("Host",SERVICES_HOST);
-            urlConn.connect();*/
-            inputStream = connection.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                    if(inputStream != null){
+                        listener.onFinish(inputStream);
+                    }
 
-        return inputStream;
 
+                    Document document = null;
+
+                    //抽象工厂类
+                    DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
+                    documentBF.setNamespaceAware(true);
+                    //DOM解析器对象
+                    DocumentBuilder documentB = null;
+                    try {
+                        documentB = documentBF.newDocumentBuilder();
+                    } catch (ParserConfigurationException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        document = documentB.parse(inputStream);
+                    } catch (SAXException e) {
+                        e.printStackTrace();
+                    }
+                    NodeList nodeList = document.getElementsByTagName("string");
+                    int len = nodeList.getLength();
+                    for(int i = 0; i < len; i++){
+                        Node n = nodeList.item(i);
+                        String result = n.getFirstChild().getNodeValue();
+                        String[] address = result.split(",");
+                        Province province = new Province();
+                        province.setProvincename(address[0]);
+                        province.setProvincecode(address[1]);
+
+                        coolweatherDB.saveProvince(province);
+
+
+                    }
+
+                    Log.d("test","save db done");
+                } catch (IOException e) {
+                    //回调onError()方法
+                    listener.onError(e);
+                    e.printStackTrace();
+                } finally {
+                    if(connection != null){
+                        connection.disconnect();
+                    }
+                }
+
+            }
+        }).start();
+    }
+
+    public interface HttpCallbackListener{
+        void onFinish(InputStream inputStream);
+        void onError(Exception e);
     }
 
     /**
     * 获得所有省信息，并存到数据库中
     */
-    public static void getAllProvinceInfo(CoolWeatherDB coolweatherDB){
-        //List<Province> provinces = new ArrayList<Province>();
-        Document document;
-
-        //抽象工厂类
-        DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
-        documentBF.setNamespaceAware(true);
-
-        try {
-            //DOM解析器对象
-            DocumentBuilder documentB = documentBF.newDocumentBuilder();
-            InputStream inputStream = getSoapInputStream(PROVINCE_CODE_URL);
-            document = documentB.parse(inputStream);
-            NodeList nodeList = document.getElementsByTagName("string");
-            int len = nodeList.getLength();
-            for(int i = 0; i < len; i++){
-                Node n = nodeList.item(i);
-                String result = n.getFirstChild().getNodeValue();
-                String[] address = result.split(",");
-                Province province = new Province();
-                province.setProvincename(address[0]);
-                province.setProvincecode(address[1]);
-
-                coolweatherDB.saveProvince(province);
-            }
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        //return provinces;
-    }
+//    public static void getAllProvinceInfo(CoolWeatherDB coolweatherDB){
+//        //List<Province> provinces = new ArrayList<Province>();
+//        Document document;
+//
+//        //抽象工厂类
+//        DocumentBuilderFactory documentBF = DocumentBuilderFactory.newInstance();
+//        documentBF.setNamespaceAware(true);
+//
+//        try {
+//            //DOM解析器对象
+//            DocumentBuilder documentB = documentBF.newDocumentBuilder();
+//            InputStream inputStream = getSoapInputStream(PROVINCE_CODE_URL);
+//            document = documentB.parse(inputStream);
+//            NodeList nodeList = document.getElementsByTagName("string");
+//            int len = nodeList.getLength();
+//            for(int i = 0; i < len; i++){
+//                Node n = nodeList.item(i);
+//                String result = n.getFirstChild().getNodeValue();
+//                String[] address = result.split(",");
+//                Province province = new Province();
+//                province.setProvincename(address[0]);
+//                province.setProvincecode(address[1]);
+//
+//                coolweatherDB.saveProvince(province);
+//            }
+//        } catch (SAXException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        }
+//
+//        //return provinces;
+//    }
 }
 
 
