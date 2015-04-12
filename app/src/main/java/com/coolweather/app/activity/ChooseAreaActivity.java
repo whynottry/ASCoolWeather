@@ -73,6 +73,7 @@ public class ChooseAreaActivity extends Activity {
                     City selCity = cityList.get(index);
                     Intent intent = new Intent(ChooseAreaActivity.this, WeatherShowActivity.class);
                     intent.putExtra("cityCode",selCity.getCityCode());
+                    intent.putExtra("cityName",selCity.getCityName());
                     startActivity(intent);
                 }
             }

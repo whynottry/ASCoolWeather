@@ -15,8 +15,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/city_name"
+            android:text="安庆"
+            android:textSize="18dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:id="@+id/today_data"
-            android:text="2014年4月12日"
+            android:text="2015年4月12日"
             android:layout_gravity="left"
             android:textSize="18dp"/>
         <LinearLayout
