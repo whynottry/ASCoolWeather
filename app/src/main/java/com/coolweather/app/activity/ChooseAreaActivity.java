@@ -2,6 +2,7 @@ package com.coolweather.app.activity;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -67,6 +68,12 @@ public class ChooseAreaActivity extends Activity {
                     Province selProvince = provinceList.get(index);
                     //从web服务器查询城市的信息，并存到数据库中
                     queryFromServer(selProvince.getProvincecode(),LEVEL_CITY);
+                }
+                if(currenLevel == LEVEL_CITY){
+                    City selCity = cityList.get(index);
+                    Intent intent = new Intent(ChooseAreaActivity.this, WeatherShowActivity.class);
+                    intent.putExtra("cityCode",selCity.getCityCode());
+                    startActivity(intent);
                 }
             }
         });

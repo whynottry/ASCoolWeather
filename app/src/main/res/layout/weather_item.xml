@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<TableLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableRow>
+        <TextView
+            android:id="@+id/item_date"
+            android:paddingLeft="20dp"
+            android:layout_height="wrap_content"
+            android:text="4月12日"
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/item_sunny"
+            android:paddingLeft="50dp"
+            android:layout_height="wrap_content"
+            android:text="多云"
+            android:textSize="20dp"/>
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:id="@+id/item_temperature"
+            android:paddingLeft="20dp"
+            android:layout_height="wrap_content"
+            android:text="8℃/22℃"
+            android:textSize="20dp"/>
+        <TextView
+            android:id="@+id/item_wind"
+            android:paddingLeft="10dp"
+            android:layout_height="wrap_content"
+            android:text="北风转西北风4-5级"
+            android:textSize="20dp"/>
+    </TableRow>
+    </TableLayout>
+</LinearLayout>
