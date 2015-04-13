@@ -3,9 +3,12 @@ package com.coolweather.app.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 import com.coolweather.app.R;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.Weather;
+import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.WeatherAdapterUtil;
 
@@ -49,18 +53,35 @@ public class WeatherShowActivity extends Activity {
     List<String> allWeatherInfo = new ArrayList<String>();
     private City city = new City();
 
+    private Button home_btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        ActivityCollector.addActivity(this);
         setContentView(R.layout.activity_weather_show);
 
         Intent intent = getIntent();
         String cityName = intent.getStringExtra("cityName");
         String cityCode = intent.getStringExtra("cityCode");
-        city.setCityCode(cityCode);
-        TextView cityNameTitle = (TextView)findViewById(R.id.city_name);
+        if(TextUtils.isEmpty(cityCode)){
+            cityCode = "1984";
+            cityName = "江宁";
+        }
+        city.setCityCode(cityCode);  //江宁的code为1984
+        TextView cityNameTitle = (TextView)findViewById(R.id.title_text);
         cityNameTitle.setText(cityName);
+
+        home_btn = (Button)findViewById(R.id.home_btn);
+        home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(WeatherShowActivity.this,ChooseAreaActivity.class);
+                startActivity(intent1);
+            }
+        });
 
         getAllWeatherInfo();
 
@@ -69,6 +90,12 @@ public class WeatherShowActivity extends Activity {
         listView.setAdapter(adapter);
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ActivityCollector.finishAllActivities();
     }
 
     public void getAllWeatherInfo(){
@@ -106,9 +133,6 @@ public class WeatherShowActivity extends Activity {
             today_humidity_view.setText(tempArray[2]);
             today_image_view.setImageResource(R.drawable.a_11);
 
-
-
-
             for(int i = 0; i < 5; i++){
                 Weather weather = new Weather();
                 temp = allWeatherInfo.get(7+5*i);
@@ -126,7 +150,8 @@ public class WeatherShowActivity extends Activity {
     }
 
     public void getAllWeatherInfoByServer(String cityCode){
-        HttpUtil.sendHttpRequest(WEATHER_QUERY_URL+cityCode, new HttpUtil.HttpCallbackListener() {
+        String url = WEATHER_QUERY_URL+cityCode;
+        HttpUtil.sendHttpRequest(url, new HttpUtil.HttpCallbackListener() {
             @Override
             public void onFinish(Document document) {
                 NodeList nodeList = document.getElementsByTagName("string");

@@ -17,6 +17,7 @@ import com.coolweather.app.R;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.CoolWeatherDB;
 import com.coolweather.app.model.Province;
+import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.HttpUtil;
 
 import org.w3c.dom.Document;
@@ -50,6 +51,8 @@ public class ChooseAreaActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_area);
+
+        ActivityCollector.addActivity(this);
 
         listView = (ListView)findViewById(R.id.list_view);
 

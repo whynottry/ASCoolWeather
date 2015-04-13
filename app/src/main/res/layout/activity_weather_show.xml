@@ -8,6 +8,11 @@
     android:background="#aff"
     tools:context="com.coolweather.app.activity.WeatherShowActivity">
 
+    <com.coolweather.app.util.TitleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ></com.coolweather.app.util.TitleLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +22,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/city_name"
             android:text="安庆"
+            android:visibility="gone"
             android:textSize="18dp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -26,7 +32,7 @@
             android:layout_gravity="left"
             android:textSize="18dp"/>
         <LinearLayout
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center">
@@ -46,7 +52,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginBottom="6dp"
             android:layout_gravity="center"
             android:id="@+id/today_temperature"
             android:text="16℃"
