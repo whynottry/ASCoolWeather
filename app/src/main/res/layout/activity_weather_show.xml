@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/today_data"
+            android:id="@+id/today_date"
             android:text="2015年4月12日"
             android:layout_gravity="left"
             android:textSize="18dp"/>
@@ -33,13 +33,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/sunday"
+                android:id="@+id/today_sunny"
                 android:textSize="40dp"
                 android:text="多云"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#aff"
+                android:id="@+id/today_image"
                 android:src="@drawable/a_1"/>
         </LinearLayout>
         <TextView
@@ -47,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_gravity="center"
+            android:id="@+id/today_temperature"
             android:text="16℃"
             android:textSize="40dp"/>
         <TextView
@@ -54,28 +56,37 @@
             android:layout_height="wrap_content"
             android:text="东南风 2级"
             android:layout_gravity="center"
+            android:id="@+id/today_wind"
             android:textSize="18dp"/>
         <TextView
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/today_humidity"
             android:text="湿度 65%"
             android:textSize="18dp"/>
         <TextView
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/today_air"
             android:text="空气质量 暂无"
             android:textSize="18dp"/>
         <TextView
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:id="@+id/today_ultraviolet"
             android:text="紫外线强度 弱"
+            android:textSize="18dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="多日预报"
             android:textSize="18dp"/>
     </LinearLayout>
     <ListView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        android:id="weather_list"></ListView>
+        android:layout_height="wrap_content"
+        android:id="@+id/weather_list"></ListView>
 </LinearLayout>

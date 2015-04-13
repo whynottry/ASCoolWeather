@@ -11,13 +11,13 @@
             android:paddingLeft="20dp"
             android:layout_height="wrap_content"
             android:text="4月12日"
-            android:textSize="20dp"/>
+            android:textSize="18dp"/>
         <TextView
             android:id="@+id/item_sunny"
             android:paddingLeft="50dp"
             android:layout_height="wrap_content"
             android:text="多云"
-            android:textSize="20dp"/>
+            android:textSize="18dp"/>
     </TableRow>
     <TableRow>
         <TextView
@@ -25,13 +25,13 @@
             android:paddingLeft="20dp"
             android:layout_height="wrap_content"
             android:text="8℃/22℃"
-            android:textSize="20dp"/>
+            android:textSize="18dp"/>
         <TextView
             android:id="@+id/item_wind"
             android:paddingLeft="10dp"
             android:layout_height="wrap_content"
             android:text="北风转西北风4-5级"
-            android:textSize="20dp"/>
+            android:textSize="18dp"/>
     </TableRow>
     </TableLayout>
 </LinearLayout>
