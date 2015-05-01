@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +19,8 @@ import android.widget.TextView;
 import com.coolweather.app.R;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.Weather;
+import com.coolweather.app.refreash.RefreshableHelper;
+import com.coolweather.app.refreash.RefreshableView;
 import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.WeatherAdapterUtil;
@@ -34,6 +39,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 public class WeatherShowActivity extends Activity {
+
+    private static final String TAG = WeatherShowActivity.class.getSimpleName();
 
     private static String WEATHER_SERVICE_URL =
             "http://webservice.webxml.com.cn/WebServices/WeatherWS.asmx/";
@@ -54,6 +61,10 @@ public class WeatherShowActivity extends Activity {
     private City city = new City();
 
     private Button home_btn;
+    private Button refresh_btn;
+
+    private WeatherAdapterUtil adapter;
+    private RefreshableView refreshableView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +94,77 @@ public class WeatherShowActivity extends Activity {
             }
         });
 
+        refresh_btn = (Button)findViewById(R.id.refresh_btn);
+        refresh_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent intent2 = new Intent(WeatherShowActivity.this,PullToRefreshExpandableListActivity.class);
+                //startActivity(intent2);
+            }
+        });
+
         getAllWeatherInfo();
 
-        WeatherAdapterUtil adapter = new WeatherAdapterUtil(WeatherShowActivity.this,R.layout.weather_item,weatherList);
+        adapter = new WeatherAdapterUtil(WeatherShowActivity.this,R.layout.weather_item,weatherList);
         ListView listView = (ListView)findViewById(R.id.weather_list);
         listView.setAdapter(adapter);
+        setListViewHeightBasedOnChildren(listView);
 
+        refreshableView = (RefreshableView) findViewById(R.id.main_refresh_view);
+        refreshableView.setRefreshableHelper(new RefreshableHelper() {
+
+            @Override
+            public View onInitRefreshHeaderView() {
+                return LayoutInflater.from(WeatherShowActivity.this).inflate(R.layout.refresh_head, null);
+            }
+
+            @Override
+            public boolean onInitRefreshHeight(int originRefreshHeight) {
+                refreshableView.setRefreshNormalHeight(refreshableView.getOriginRefreshHeight() / 3);
+                refreshableView.setRefreshingHeight(refreshableView.getOriginRefreshHeight());
+                refreshableView.setRefreshArrivedStateHeight(refreshableView.getOriginRefreshHeight());
+                return false;
+            }
+
+            @Override
+            public void onRefreshStateChanged(View refreshView, int refreshState) {
+                TextView tv = (TextView) refreshView.findViewById(R.id.refresh_head_tv);
+                switch (refreshState) {
+                    case RefreshableView.STATE_REFRESH_NORMAL:
+                        tv.setText("");
+                        //tv.setBackgroundColor(0xff);
+                        break;
+                    case RefreshableView.STATE_REFRESH_NOT_ARRIVED:
+                        tv.setText("往下拉可以刷新");
+                        break;
+                    case RefreshableView.STATE_REFRESH_ARRIVED:
+                        tv.setText("放手可以刷新");
+                        break;
+                    case RefreshableView.STATE_REFRESHING:
+                        tv.setText("正在刷新");
+                        new Thread(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            Thread.sleep(1000l);
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    refreshableView.onCompleteRefresh();
+                                                }
+                                            });
+                                        } catch (InterruptedException e) {
+                                            Log.e(TAG, "_", e);
+                                        }
+                                    }
+                                }
+                        ).start();
+                        break;
+
+                }
+            }
+        });
 
     }
 
@@ -174,6 +250,30 @@ public class WeatherShowActivity extends Activity {
 
             }
         });
+    }
+
+    public void setListViewHeightBasedOnChildren(ListView listView) {
+        // 获取ListView对应的Adapter
+        //ListAdapter listAdapter = listView.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        int totalHeight = 0;
+        for (int i = 0, len = adapter.getCount(); i < len; i++) {
+            // listAdapter.getCount()返回数据项的数目
+            View listItem = adapter.getView(i, null, listView);
+            // 计算子项View 的宽高
+            listItem.measure(0, 0);
+            // 统计所有子项的总高度
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight+ (listView.getDividerHeight() * (adapter.getCount() - 1));
+        // listView.getDividerHeight()获取子项间分隔符占用的高度
+        // params.height最后得到整个ListView完整显示需要的高度
+        listView.setLayoutParams(params);
     }
 
 

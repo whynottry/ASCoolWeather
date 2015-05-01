@@ -12,6 +12,10 @@
         -->
     </style>
 
+    <declare-styleable name="refreshableView">
+        <attr name="interceptAllMoveEvents" format="boolean"/>
+    </declare-styleable>
+
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
