@@ -32,7 +32,9 @@ import org.w3c.dom.NodeList;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -105,10 +107,6 @@ public class WeatherShowActivity extends Activity {
 
         getAllWeatherInfo();
 
-        adapter = new WeatherAdapterUtil(WeatherShowActivity.this,R.layout.weather_item,weatherList);
-        ListView listView = (ListView)findViewById(R.id.weather_list);
-        listView.setAdapter(adapter);
-        setListViewHeightBasedOnChildren(listView);
 
         refreshableView = (RefreshableView) findViewById(R.id.main_refresh_view);
         refreshableView.setRefreshableHelper(new RefreshableHelper() {
@@ -132,31 +130,32 @@ public class WeatherShowActivity extends Activity {
                 switch (refreshState) {
                     case RefreshableView.STATE_REFRESH_NORMAL:
                         tv.setText("");
+                        tv.setVisibility(View.GONE);
                         //tv.setBackgroundColor(0xff);
                         break;
                     case RefreshableView.STATE_REFRESH_NOT_ARRIVED:
                         tv.setText("往下拉可以刷新");
+                        tv.setVisibility(View.VISIBLE);
                         break;
                     case RefreshableView.STATE_REFRESH_ARRIVED:
                         tv.setText("放手可以刷新");
+                        tv.setVisibility(View.VISIBLE);
                         break;
                     case RefreshableView.STATE_REFRESHING:
                         tv.setText("正在刷新");
+                        tv.setVisibility(View.VISIBLE);
                         new Thread(
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        try {
-                                            Thread.sleep(1000l);
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    refreshableView.onCompleteRefresh();
-                                                }
-                                            });
-                                        } catch (InterruptedException e) {
-                                            Log.e(TAG, "_", e);
-                                        }
+                                        getAllWeatherInfoByServer(city.getCityCode());
+                                        //Thread.sleep(1000l);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                refreshableView.onCompleteRefresh();
+                                            }
+                                        });
                                     }
                                 }
                         ).start();
@@ -191,7 +190,12 @@ public class WeatherShowActivity extends Activity {
             city_name_view.setText(allWeatherInfo.get(1));
             temp = allWeatherInfo.get(3);
             tempArray = temp.split(" ");
-            today_date_view.setText(tempArray[0]);
+
+            SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy年MM月dd日    HH:mm:ss     ");
+            Date    curDate    =   new Date(System.currentTimeMillis());//获取当前时间
+            String    str    =    formatter.format(curDate);
+            today_date_view.setText(str);
+            //today_date_view.setText(tempArray[0]);
             temp = allWeatherInfo.get(7);
             tempArray = temp.split(" ");
             today_sunny_view.setText(tempArray[1]);
@@ -209,6 +213,7 @@ public class WeatherShowActivity extends Activity {
             today_humidity_view.setText(tempArray[2]);
             today_image_view.setImageResource(R.drawable.a_11);
 
+            weatherList.clear();
             for(int i = 0; i < 5; i++){
                 Weather weather = new Weather();
                 temp = allWeatherInfo.get(7+5*i);
@@ -219,6 +224,12 @@ public class WeatherShowActivity extends Activity {
                 weather.setWind(allWeatherInfo.get(9+5*i));
                 weatherList.add(weather);
             }
+
+            adapter = new WeatherAdapterUtil(WeatherShowActivity.this,R.layout.weather_item,weatherList);
+            ListView listView = (ListView)findViewById(R.id.weather_list);
+            listView.setAdapter(adapter);
+            setListViewHeightBasedOnChildren(listView);
+
 
         }else{
             getAllWeatherInfoByServer(city.getCityCode());
@@ -260,8 +271,9 @@ public class WeatherShowActivity extends Activity {
         }
 
         int totalHeight = 0;
-        for (int i = 0, len = adapter.getCount(); i < len; i++) {
-            // listAdapter.getCount()返回数据项的数目
+        // listAdapter.getCount()返回数据项的数目
+        int len = adapter.getCount();
+        for (int i = 0; i < len; i++) {
             View listItem = adapter.getView(i, null, listView);
             // 计算子项View 的宽高
             listItem.measure(0, 0);
