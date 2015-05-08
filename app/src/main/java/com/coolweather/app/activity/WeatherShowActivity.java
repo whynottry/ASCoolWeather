@@ -1,10 +1,9 @@
 package com.coolweather.app.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,12 +14,15 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolweather.app.R;
+import com.coolweather.app.circlePageIndicator.CirclePageIndicator;
 import com.coolweather.app.model.City;
 import com.coolweather.app.model.Weather;
 import com.coolweather.app.refreash.RefreshableHelper;
 import com.coolweather.app.refreash.RefreshableView;
+import com.coolweather.app.circlePageIndicator.TestFragmentAdapter;
 import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.HttpUtil;
 import com.coolweather.app.util.WeatherAdapterUtil;
@@ -29,18 +31,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+public class WeatherShowActivity extends BaseSampleActivity {
 
-public class WeatherShowActivity extends Activity {
+    TestFragmentAdapter mAdapter;
+    ViewPager mPager;
+    CirclePageIndicator mIndicator;
 
     private static final String TAG = WeatherShowActivity.class.getSimpleName();
 
@@ -107,6 +107,29 @@ public class WeatherShowActivity extends Activity {
 
         getAllWeatherInfo();
 
+//        mAdapter = new TestFragmentAdapter(getSupportFragmentManager());
+//
+//        mPager = (ViewPager)findViewById(R.id.pager);
+//        mPager.setAdapter(mAdapter);
+//
+//        mIndicator = (CirclePageIndicator)findViewById(R.id.indicator);
+//        mIndicator.setViewPager(mPager);
+//
+//        //We set this on the indicator, NOT the pager
+//        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                Toast.makeText(WeatherShowActivity.this, "Changed to page " + position, Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//            }
+//        });
 
         refreshableView = (RefreshableView) findViewById(R.id.main_refresh_view);
         refreshableView.setRefreshableHelper(new RefreshableHelper() {
@@ -165,6 +188,10 @@ public class WeatherShowActivity extends Activity {
             }
         });
 
+
+
+
+
     }
 
     @Override
@@ -198,20 +225,36 @@ public class WeatherShowActivity extends Activity {
             //today_date_view.setText(tempArray[0]);
             temp = allWeatherInfo.get(7);
             tempArray = temp.split(" ");
-            today_sunny_view.setText(tempArray[1]);
+            if(tempArray.length >= 2) {
+                today_sunny_view.setText(tempArray[1]);
+            }else {
+                today_sunny_view.setText("");
+            }
+            temp = allWeatherInfo.get(10);
+            int resId = getResId(temp);
+            today_image_view.setImageResource(resId);
             temp = allWeatherInfo.get(5);
             tempArray = temp.split("；");
-            today_air_view.setText(tempArray[0]);
-            today_ultraviolet_view.setText(tempArray[1]);
+            if(tempArray.length >= 2) {
+                today_air_view.setText(tempArray[0]);
+                today_ultraviolet_view.setText(tempArray[1]);
+            }else{
+                today_air_view.setText("");
+                today_ultraviolet_view.setText("");
+            }
             temp = allWeatherInfo.get(4);
             tempArray = temp.split("；");
             String[] tempArray2;
-            tempArray2 = tempArray[0].split("：");
-            today_tempreature_view.setText(tempArray2[2]);
-            tempArray2 = tempArray[1].split("：");
-            today_wind_view.setText(tempArray2[1]);
-            today_humidity_view.setText(tempArray[2]);
-            today_image_view.setImageResource(R.drawable.a_11);
+            if(tempArray.length>=3) {
+                tempArray2 = tempArray[0].split("：");
+                if(tempArray2.length >=3) {
+                    today_tempreature_view.setText(tempArray2[2]);
+                    tempArray2 = tempArray[1].split("：");
+                    today_wind_view.setText(tempArray2[1]);
+                }
+                today_humidity_view.setText(tempArray[2]);
+
+            }
 
             weatherList.clear();
             for(int i = 0; i < 5; i++){
@@ -245,7 +288,10 @@ public class WeatherShowActivity extends Activity {
                 int len = nodeList.getLength();
                 for(int i = 0; i < len; i++){
                     Node n = nodeList.item(i);
-                    String weather = n.getFirstChild().getNodeValue();
+                    String weather = "";
+                    if(n.hasChildNodes()) {
+                        weather = n.getFirstChild().getNodeValue();
+                    }
                     allWeatherInfo.add(weather);
                 }
                 runOnUiThread(new Runnable() {
@@ -309,5 +355,105 @@ public class WeatherShowActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public int getResId(String weatherName){
+        if(weatherName.equals("0.gif")){
+            return R.drawable.a_0;
+        }
+        if(weatherName.equals("1.gif")){
+            return R.drawable.a_1;
+        }
+        if(weatherName.equals("2.gif")){
+            return R.drawable.a_2;
+        }
+        if(weatherName.equals("3.gif")){
+            return R.drawable.a_3;
+        }
+        if(weatherName.equals("4.gif")){
+            return R.drawable.a_4;
+        }
+        if(weatherName.equals("5.gif")){
+            return R.drawable.a_5;
+        }
+        if(weatherName.equals("6.gif")){
+            return R.drawable.a_6;
+        }
+        if(weatherName.equals("7.gif")){
+            return R.drawable.a_7;
+        }
+        if(weatherName.equals("8.gif")){
+            return R.drawable.a_8;
+        }
+        if(weatherName.equals("9.gif")){
+            return R.drawable.a_9;
+        }
+        if(weatherName.equals("10.gif")){
+            return R.drawable.a_10;
+        }
+        if(weatherName.equals("11.gif")){
+            return R.drawable.a_11;
+        }
+        if(weatherName.equals("12.gif")){
+            return R.drawable.a_12;
+        }
+        if(weatherName.equals("13.gif")){
+            return R.drawable.a_13;
+        }
+        if(weatherName.equals("14.gif")){
+            return R.drawable.a_14;
+        }
+        if(weatherName.equals("15.gif")){
+            return R.drawable.a_15;
+        }
+        if(weatherName.equals("16.gif")){
+            return R.drawable.a_16;
+        }
+        if(weatherName.equals("17.gif")){
+            return R.drawable.a_17;
+        }
+        if(weatherName.equals("18.gif")){
+            return R.drawable.a_18;
+        }
+        if(weatherName.equals("19.gif")){
+            return R.drawable.a_19;
+        }
+        if(weatherName.equals("20.gif")){
+            return R.drawable.a_20;
+        }
+        if(weatherName.equals("21.gif")){
+            return R.drawable.a_21;
+        }
+        if(weatherName.equals("22.gif")){
+            return R.drawable.a_22;
+        }
+        if(weatherName.equals("23.gif")){
+            return R.drawable.a_23;
+        }
+        if(weatherName.equals("24.gif")){
+            return R.drawable.a_24;
+        }
+        if(weatherName.equals("25.gif")){
+            return R.drawable.a_25;
+        }
+        if(weatherName.equals("26.gif")){
+            return R.drawable.a_26;
+        }
+        if(weatherName.equals("27.gif")){
+            return R.drawable.a_27;
+        }
+        if(weatherName.equals("28.gif")){
+            return R.drawable.a_28;
+        }
+        if(weatherName.equals("29.gif")){
+            return R.drawable.a_29;
+        }
+        if(weatherName.equals("30.gif")){
+            return R.drawable.a_30;
+        }
+        if(weatherName.equals("31.gif")){
+            return R.drawable.a_31;
+        }
+        return R.drawable.a_nothing;
     }
 }

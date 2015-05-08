@@ -21,6 +21,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/city_name"
             android:text="安庆"
+            android:textColor="#fff"
             android:visibility="gone"
             android:textSize="18dp"/>
         <TextView
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/today_date"
             android:text="2015年4月12日"
+            android:textColor="#fff"
             android:layout_gravity="left"
             android:textSize="18dp"/>
         <LinearLayout
@@ -40,11 +42,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/today_sunny"
                 android:textSize="38dp"
+                android:textColor="#fff"
                 android:text="多云"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#aff"
+                android:background="#000"
                 android:id="@+id/today_image"
                 android:src="@drawable/a_1"/>
         </LinearLayout>
@@ -55,11 +58,13 @@
             android:layout_gravity="center"
             android:id="@+id/today_temperature"
             android:text="16℃"
+            android:textColor="#fff"
             android:textSize="38dp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="东南风 2级"
+            android:textColor="#fff"
             android:layout_gravity="center"
             android:id="@+id/today_wind"
             android:textSize="17dp"/>
@@ -69,6 +74,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/today_humidity"
             android:text="湿度 65%"
+            android:textColor="#fff"
             android:textSize="17dp"/>
         <TextView
             android:layout_gravity="center"
@@ -77,6 +83,7 @@
             android:id="@+id/today_air"
             android:visibility="gone"
             android:text="空气质量 暂无"
+            android:textColor="#fff"
             android:textSize="17dp"/>
         <TextView
             android:layout_gravity="center"
@@ -84,12 +91,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/today_ultraviolet"
             android:text="紫外线强度 弱"
+            android:textColor="#fff"
             android:textSize="17dp"/>
         <TextView
             android:paddingTop="2dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="多日预报"
+            android:textColor="#fff"
             android:textSize="17dp"/>
 </LinearLayout>
 

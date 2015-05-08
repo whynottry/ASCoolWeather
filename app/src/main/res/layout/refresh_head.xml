@@ -4,14 +4,14 @@
               android:layout_width="fill_parent"
               android:layout_height="70dp"
               android:gravity="center"
-              android:background="#aff"
+              android:background="#000"
         >
     <TextView
             android:id="@+id/refresh_head_tv"
             android:layout_width="fill_parent"
             android:layout_height="70dp"
             android:gravity="center"
-            android:background="#aff"
+            android:background="#000"
             android:textSize="18sp"
             />
 
