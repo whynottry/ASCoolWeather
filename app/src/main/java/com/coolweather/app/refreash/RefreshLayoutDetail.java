@@ -3,7 +3,9 @@ package com.coolweather.app.refreash;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
 import com.coolweather.app.R;
 
@@ -16,9 +18,10 @@ public class RefreshLayoutDetail extends ScrollView {
         super(context);
     }
 
-    public RefreshLayoutDetail(Context context, AttributeSet attrs) {
+    public RefreshLayoutDetail(final Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.refresh_layout_detail,this);
+
     }
 
     public RefreshLayoutDetail(Context context, AttributeSet attrs, int defStyleAttr) {

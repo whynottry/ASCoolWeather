@@ -13,24 +13,24 @@
         android:layout_height="wrap_content"
         ></com.coolweather.app.util.TitleLayout>
 
-    <com.coolweather.app.refreash.RefreshLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        </com.coolweather.app.refreash.RefreshLayout>
+    <!--<com.coolweather.app.refreash.RefreshLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!--</com.coolweather.app.refreash.RefreshLayout>-->
 
-    <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/pager"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_weight="1"-->
-    <!--/>-->
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+    />
 
-    <!--<com.coolweather.app.circlePageIndicator.CirclePageIndicator-->
-        <!--android:id="@+id/indicator"-->
-        <!--android:padding="10dip"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_width="fill_parent"-->
-    <!--/>-->
+    <com.coolweather.app.circlePageIndicator.CirclePageIndicator
+        android:id="@+id/indicator"
+        android:padding="10dip"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+    />
 
 
 </LinearLayout>

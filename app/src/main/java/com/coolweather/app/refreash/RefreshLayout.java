@@ -13,7 +13,6 @@ import com.coolweather.app.R;
  * Created by Star on 2015/5/4.
  */
 public class RefreshLayout extends LinearLayout {
-    private RefreshableView refreshableView;
 
     public RefreshLayout(Context context) {
         super(context);
