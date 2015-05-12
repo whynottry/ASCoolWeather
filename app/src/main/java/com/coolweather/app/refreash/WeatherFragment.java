@@ -73,9 +73,8 @@ public class WeatherFragment extends Fragment {
 
         city_code = city.getCityCode();
 
-        allWeatherInfo.clear();
 
-        //show_city = city;
+
         return f;
     }
 
@@ -92,6 +91,7 @@ public class WeatherFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
+        allWeatherInfo.clear();
         view = inflater.inflate(R.layout.refreshlayout,container,false);
         initRefreshPageView();
 
@@ -132,10 +132,7 @@ public class WeatherFragment extends Fragment {
                     case RefreshableView.STATE_REFRESHING:
                         tv.setText("正在刷新");
                         tv.setVisibility(View.VISIBLE);
-                        //getAllWeatherInfoByServer(city.getCityCode());
-                        getAllWeatherInfoByServer(city_code);
-                        //URL urli;
-                        //new RefreshAsyncTask().execute(urli);
+                        //getAllWeatherInfoByServer(city_code);
                         refreshableView.onCompleteRefresh();
                         break;
                 }
@@ -176,7 +173,7 @@ public class WeatherFragment extends Fragment {
         //List<String> allWeatherInfo;
 
         public RefreshAsyncTask() {
-            // allWeatherInfo = new ArrayList<String>();
+//            allWeatherInfo = new ArrayList<String>();
         }
 
         protected List<String> doInBackground(String... urls) {
@@ -211,6 +208,7 @@ public class WeatherFragment extends Fragment {
                             Log.d("WXDebug", "++++++++++++++++++++");
                             Log.d("WXDebug","24小时访问量超过限制");
                         }
+//                        allWeatherInfo.clear();
                         for(int i = 0; i < len; i++){
                             Node n = nodeList.item(i);
                             String weather = "";
@@ -228,7 +226,7 @@ public class WeatherFragment extends Fragment {
 
             } catch (IOException e) {
                 //回调onError()方法
-                //listener.onError(e);
+                //listener.onErr                                                                                                                        or(e);
                 e.printStackTrace();
             } finally {
                 if(connection != null){
@@ -257,11 +255,11 @@ public class WeatherFragment extends Fragment {
             temp = allWeatherInfo.get(3);
             tempArray = temp.split(" ");
 
-            SimpleDateFormat formatter    =   new    SimpleDateFormat    ("yyyy年MM月dd日    HH:mm:ss     ");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
             Date curDate    =   new Date(System.currentTimeMillis());//获取当前时间
             String    str    =    formatter.format(curDate);
+            str += allWeatherInfo.get(1);
             today_date_view.setText(str);
-            //today_date_view.setText(tempArray[0]);
             temp = allWeatherInfo.get(7);
             tempArray = temp.split(" ");
             if(tempArray.length >= 2) {

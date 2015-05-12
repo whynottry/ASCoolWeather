@@ -121,6 +121,24 @@ public class CoolWeatherDB {
     }
 
     /**
+     *由城市code查询城市name
+     */
+    public String queryCityName(String cityCode){
+        String cityName = "";
+
+        Cursor cursor = db.query("City",null,"city_code = ?",
+                new String[] {cityCode},null,null,null);
+        if(cursor.moveToFirst()){
+            do{
+                cityName = cursor.getString(cursor.getColumnIndex("city_name"));
+            }while(cursor.moveToNext());
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+        return cityName;
+    }
+    /**
      * 将Country实例存储到数据库
      *//*
     public void saveCountry(Country country){

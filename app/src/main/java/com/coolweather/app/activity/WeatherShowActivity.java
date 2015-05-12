@@ -2,6 +2,7 @@ package com.coolweather.app.activity;
 
 //import android.app.ListFragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,10 +23,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.coolweather.app.R;
 import com.coolweather.app.circlePageIndicator.CirclePageIndicator;
 import com.coolweather.app.model.City;
+import com.coolweather.app.model.CoolWeatherDB;
 import com.coolweather.app.model.Weather;
 import com.coolweather.app.refreash.RefreshableHelper;
 import com.coolweather.app.refreash.RefreshableView;
@@ -46,7 +49,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -96,21 +102,51 @@ public class WeatherShowActivity extends BaseSampleActivity {
         initView();
         citys = new ArrayList<City>();
 
+
+        SharedPreferences.Editor editor = getSharedPreferences("citys_data",MODE_PRIVATE).edit();
+        //
+
+//        editor.clear();
+//        editor.commit();
+
+        //从文件中读城市
+        //MODE_PRIVATE,只有当前应用程序可操作
+        //如果文件中没有，则创建该文件。
+        SharedPreferences pref = getSharedPreferences("citys_data",MODE_PRIVATE);
+        Set<String> codeResults = new HashSet<String>();
+        codeResults = pref.getStringSet("citys_code",new HashSet<String>());
+        CoolWeatherDB coolWeatherDB = CoolWeatherDB.getInstance(this);
+        for(String s:codeResults){
+            City cityTemp = new City();
+            cityTemp.setCityCode(s);
+            String cityTempName = coolWeatherDB.queryCityName(s);
+            cityTemp.setCityName(cityTempName);
+            citys.add(cityTemp);
+        }
+
         Intent intent = getIntent();
         String cityName = intent.getStringExtra("cityName");
         String cityCode = intent.getStringExtra("cityCode");
         if(TextUtils.isEmpty(cityCode)){
+            //定位信息
             cityCode = "1984";
             cityName = "江宁";
         }
-        city.setCityCode(cityCode);  //江宁的code为1984
-        city.setCityName(cityName);
-        citys.add(city);
-        int len = citys.size();
+        if(!ifCityExist(cityCode))
+        {
+            //将该城市存到文件中
+            codeResults.add(cityCode);
+            editor.clear();
+            editor.putStringSet("citys_code",codeResults);
+            editor.commit();
 
+            //存到链表里
+            city.setCityCode(cityCode);  //江宁的code为1984
+            city.setCityName(cityName);
+            citys.add(city);
+        }
 
         cityNameTitle.setText(cityName);
-
 
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,8 +165,6 @@ public class WeatherShowActivity extends BaseSampleActivity {
             }
         });
 
-        //getAllWeatherInfo();
-
         mAdapter = new WeatherFragmentAdapter(getSupportFragmentManager(),citys);
 
         mPager = (ViewPager)findViewById(R.id.pager);
@@ -141,21 +175,31 @@ public class WeatherShowActivity extends BaseSampleActivity {
         mIndicator.setViewPager(mPager);
 
         //We set this on the indicator, NOT the pager
-//        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageSelected(int position) {
-//                Toast.makeText(WeatherShowActivity.this, "Changed to page " + position, Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//        });
+        mIndicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                String s = citys.get(position).getCityName();
+                cityNameTitle.setText(citys.get(position).getCityName());
+            }
 
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+    }
+
+    public boolean ifCityExist(String cityCode){
+        for(City city:citys){
+            if(city.getCityCode().equals(cityCode)){
+                return true;
+            }
+        }
+        return false;
     }
 
 //    public static class WeatherFragmentAdapter extends FragmentStatePagerAdapter {

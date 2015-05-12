@@ -39,6 +39,5 @@ public class WeatherFragmentAdapter  extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
          return cityNum;
-        //return MAX_CITY_COUNT;
     }
 }
