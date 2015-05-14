@@ -1,8 +1,10 @@
 package com.coolweather.app.refreash;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -73,8 +75,6 @@ public class WeatherFragment extends Fragment {
 
         city_code = city.getCityCode();
 
-
-
         return f;
     }
 
@@ -94,8 +94,8 @@ public class WeatherFragment extends Fragment {
         allWeatherInfo.clear();
         view = inflater.inflate(R.layout.refreshlayout,container,false);
         initRefreshPageView();
-
-        getAllWeatherInfo();
+        //getAllWeatherInfo();
+        readAllWeatherInfo();
 
         refreshableView.setRefreshableHelper(new RefreshableHelper() {
 
@@ -132,7 +132,7 @@ public class WeatherFragment extends Fragment {
                     case RefreshableView.STATE_REFRESHING:
                         tv.setText("正在刷新");
                         tv.setVisibility(View.VISIBLE);
-                        //getAllWeatherInfoByServer(city_code);
+                        getAllWeatherInfoByServer(city_code);
                         refreshableView.onCompleteRefresh();
                         break;
                 }
@@ -217,6 +217,8 @@ public class WeatherFragment extends Fragment {
                             }
                             allWeatherInfo.add(weather);
                         }
+                        //写文件
+                        saveSelCityInfo(urls[1]);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -241,11 +243,111 @@ public class WeatherFragment extends Fragment {
         }
 
         protected void onPostExecute(List<String> allWeatherInfo) {
-            getAllWeatherInfo();
+            //getAllWeatherInfo();
+            readAllWeatherInfo();
         }
     }
 
-    public void getAllWeatherInfo(){
+    public void saveSelCityInfo(String cityCode){
+        SharedPreferences.Editor editor;
+        String fileName = cityCode + "_info";
+        editor = (getActivity()).getSharedPreferences(fileName,(getActivity()).MODE_PRIVATE).edit();
+
+        String temp;
+        String[] tempArray;
+
+        //initRefreshPageView();
+        editor.putString("city_name_view",allWeatherInfo.get(1));
+        //city_name_view.setText(allWeatherInfo.get(1));
+        temp = allWeatherInfo.get(3);
+        tempArray = temp.split(" ");
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
+        Date curDate    =   new Date(System.currentTimeMillis());//获取当前时间
+        String    str    =    formatter.format(curDate);
+        str += allWeatherInfo.get(1);
+        //today_date_view.setText(str);
+        editor.putString("today_date_view",str);
+        temp = allWeatherInfo.get(7);
+        tempArray = temp.split(" ");
+        if(tempArray.length >= 2) {
+            //today_sunny_view.setText(tempArray[1]);
+            editor.putString("today_sunny_view",tempArray[1]);
+        }else {
+            //today_sunny_view.setText("");
+            editor.putString("today_sunny_view","");
+        }
+        temp = allWeatherInfo.get(10);
+        int resId = getResId(temp);
+        //today_image_view.setImageResource(resId);
+        editor.putInt("today_image_view", resId);
+        temp = allWeatherInfo.get(5);
+        tempArray = temp.split("；");
+        if(tempArray.length >= 2) {
+//            today_air_view.setText(tempArray[0]);
+//            today_ultraviolet_view.setText(tempArray[1]);
+            editor.putString("today_air_view",tempArray[0]);
+            editor.putString("today_ultraviolet_view",tempArray[1]);
+        }else{
+            editor.putString("today_air_view","");
+            editor.putString("today_ultraviolet_view","");
+//            today_air_view.setText("");
+//            today_ultraviolet_view.setText("");
+        }
+        temp = allWeatherInfo.get(4);
+        tempArray = temp.split("；");
+        String[] tempArray2;
+        if(tempArray.length>=3) {
+            tempArray2 = tempArray[0].split("：");
+            if(tempArray2.length >=3) {
+                //today_tempreature_view.setText(tempArray2[2]);
+                editor.putString("today_tempreature_view",tempArray2[2]);
+                tempArray2 = tempArray[1].split("：");
+                //today_wind_view.setText(tempArray2[1]);
+                editor.putString("today_wind_view",tempArray2[1]);
+            }
+            //today_humidity_view.setText(tempArray[2]);
+            editor.putString("today_humidity_view",tempArray[2]);
+        }
+
+        weatherList.clear();
+        String key = "";
+        for(int i = 0; i < 5; i++){
+            Weather weather = new Weather();
+            temp = allWeatherInfo.get(7+5*i);
+
+            tempArray = temp.split(" ");
+            //weather.setDate(tempArray[0]);
+            //weather.setSunny(tempArray[1]);
+            key = "weatherList_data_"+i;
+            editor.putString(key,tempArray[0]);
+            key = "weatherList_sunny_"+i;
+            editor.putString(key,tempArray[1]);
+            key = "weatherList_temperature_"+i;
+            editor.putString(key,allWeatherInfo.get(8+5*i));
+            key = "weatherList_windy_"+i;
+            editor.putString(key,allWeatherInfo.get(9+5*i));
+//            weather.setTemperature(allWeatherInfo.get(8+5*i));
+//            weather.setWind(allWeatherInfo.get(9+5*i));
+//            weatherList.add(weather);
+        }
+
+        editor.commit();
+    }
+
+    public void readAllWeatherInfo(){
+        String fileName = city_code + "_info";
+        SharedPreferences pref = (getActivity()).getSharedPreferences(fileName,(getActivity()).MODE_PRIVATE);
+        String today_date_view_str = pref.getString("today_date_view","");
+        if(TextUtils.isEmpty(today_date_view_str)){
+            getAllWeatherInfoByServer(city_code);
+        }else{
+            today_date_view.setText(today_date_view_str);
+        }
+
+    }
+
+    public synchronized void getAllWeatherInfo(){
         if(allWeatherInfo.size() > 0){
             String temp;
             String[] tempArray;
@@ -310,7 +412,6 @@ public class WeatherFragment extends Fragment {
             listView.setAdapter(adapter);
             setListViewHeightBasedOnChildren(listView);
 
-
         }else{
             //getAllWeatherInfoByServer(city.getCityCode());
             getAllWeatherInfoByServer(city_code);
@@ -319,7 +420,7 @@ public class WeatherFragment extends Fragment {
 
     public void getAllWeatherInfoByServer(String cityCode){
         String url = WEATHER_QUERY_URL+cityCode;
-        new RefreshAsyncTask().execute(url);
+        new RefreshAsyncTask().execute(url,cityCode);
     }
 
     public int getResId(String weatherName){
