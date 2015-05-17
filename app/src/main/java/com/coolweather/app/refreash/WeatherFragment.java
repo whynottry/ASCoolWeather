@@ -52,7 +52,7 @@ public class WeatherFragment extends Fragment {
     private View view;
     private RefreshableView refreshableView;
     private List<Weather> weatherList = new ArrayList<Weather>();
-    private TextView city_name_view;
+    //private TextView city_name_view;
     private TextView today_date_view;
     private TextView today_sunny_view;
     private ImageView today_image_view;
@@ -146,7 +146,7 @@ public class WeatherFragment extends Fragment {
 
         refreshableView = (RefreshableView) view.findViewById(R.id.main_refresh_view);
         today_humidity_view = (TextView)view.findViewById(R.id.today_humidity);
-        city_name_view = (TextView)view.findViewById(R.id.city_name);
+        //city_name_view = (TextView)view.findViewById(R.id.city_name);
         today_date_view = (TextView)view.findViewById(R.id.today_date);
         today_sunny_view = (TextView)view.findViewById(R.id.today_sunny);
         today_image_view = (ImageView)view.findViewById(R.id.today_image);
@@ -257,7 +257,7 @@ public class WeatherFragment extends Fragment {
         String[] tempArray;
 
         //initRefreshPageView();
-        editor.putString("city_name_view",allWeatherInfo.get(1));
+        //editor.putString("city_name_view",allWeatherInfo.get(1));
         //city_name_view.setText(allWeatherInfo.get(1));
         temp = allWeatherInfo.get(3);
         tempArray = temp.split(" ");
@@ -266,15 +266,12 @@ public class WeatherFragment extends Fragment {
         Date curDate    =   new Date(System.currentTimeMillis());//获取当前时间
         String    str    =    formatter.format(curDate);
         str += allWeatherInfo.get(1);
-        //today_date_view.setText(str);
         editor.putString("today_date_view",str);
         temp = allWeatherInfo.get(7);
         tempArray = temp.split(" ");
         if(tempArray.length >= 2) {
-            //today_sunny_view.setText(tempArray[1]);
             editor.putString("today_sunny_view",tempArray[1]);
         }else {
-            //today_sunny_view.setText("");
             editor.putString("today_sunny_view","");
         }
         temp = allWeatherInfo.get(10);
@@ -353,7 +350,7 @@ public class WeatherFragment extends Fragment {
             String[] tempArray;
 
             initRefreshPageView();
-            city_name_view.setText(allWeatherInfo.get(1));
+            //city_name_view.setText(allWeatherInfo.get(1));
             temp = allWeatherInfo.get(3);
             tempArray = temp.split(" ");
 

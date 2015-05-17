@@ -57,7 +57,7 @@ public class MyWeatherFragment extends Fragment {
     private View view;
     private RefreshableView refreshableView;
     private List<Weather> weatherList = new ArrayList<Weather>();
-    private TextView city_name_view;
+    //private TextView city_name_view;
     private TextView today_date_view;
     private TextView today_sunny_view;
     private ImageView today_image_view;
@@ -89,22 +89,31 @@ public class MyWeatherFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         pageNum = getArguments() != null ? getArguments().getInt("num") : 1;
-//            if ((savedInstanceState != null) && savedInstanceState.containsKey(KEY_CONTENT)) {
-//                mContent = savedInstanceState.getString(KEY_CONTENT);
-//            }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        allWeatherInfo.clear();
         view = inflater.inflate(R.layout.refreshlayout,container,false);
         initRefreshPageView();
         //getAllWeatherInfo();
         mCurrentWIM = readAllWeatherInfoFromFileCache(city_code);
         if(mCurrentWIM != null)
         {
-            city_name_view.setText(mCurrentWIM.mCityName);
+            today_date_view.setText(mCurrentWIM.m_todayDataView);
+            today_date_view.setText(mCurrentWIM.m_todayDataView);
+            today_sunny_view.setText(mCurrentWIM.m_todaySunnyView);
+            today_image_view.setImageResource(mCurrentWIM.m_todayImageId);
+            today_air_view.setText(mCurrentWIM.m_todayAirView);
+            today_ultraviolet_view.setText(mCurrentWIM.m_todayUltravioletView);
+            today_tempreature_view.setText(mCurrentWIM.m_todayTempreatureView);
+            today_wind_view.setText(mCurrentWIM.m_todayWindView);
+            today_humidity_view.setText(mCurrentWIM.m_todayHumidityView);
+
+            adapter = new WeatherAdapterUtil(getActivity(),R.layout.weather_item,mCurrentWIM.weatherList);
+            ListView listView = (ListView)view.findViewById(R.id.weather_list);
+            listView.setAdapter(adapter);
+            setListViewHeightBasedOnChildren(listView);
         }
         else
         {
@@ -159,7 +168,6 @@ public class MyWeatherFragment extends Fragment {
 
         refreshableView = (RefreshableView) view.findViewById(R.id.main_refresh_view);
         today_humidity_view = (TextView)view.findViewById(R.id.today_humidity);
-        city_name_view = (TextView)view.findViewById(R.id.city_name);
         today_date_view = (TextView)view.findViewById(R.id.today_date);
         today_sunny_view = (TextView)view.findViewById(R.id.today_sunny);
         today_image_view = (ImageView)view.findViewById(R.id.today_image);
@@ -211,7 +219,19 @@ public class MyWeatherFragment extends Fragment {
                 saveSelCityInfo(cityCode, result);
                 mCurrentWIM = result;
                 //初始化界面将取到的数据设置到界面上
-                city_name_view.setText(mCurrentWIM.mCityName);
+                today_date_view.setText(mCurrentWIM.m_todayDataView);
+                today_sunny_view.setText(mCurrentWIM.m_todaySunnyView);
+                today_image_view.setImageResource(mCurrentWIM.m_todayImageId);
+                today_air_view.setText(mCurrentWIM.m_todayAirView);
+                today_ultraviolet_view.setText(mCurrentWIM.m_todayUltravioletView);
+                today_tempreature_view.setText(mCurrentWIM.m_todayTempreatureView);
+                today_wind_view.setText(mCurrentWIM.m_todayWindView);
+                today_humidity_view.setText(mCurrentWIM.m_todayHumidityView);
+
+                adapter = new WeatherAdapterUtil(getActivity(),R.layout.weather_item,mCurrentWIM.weatherList);
+                ListView listView = (ListView)view.findViewById(R.id.weather_list);
+                listView.setAdapter(adapter);
+                setListViewHeightBasedOnChildren(listView);
             }
             
             @Override

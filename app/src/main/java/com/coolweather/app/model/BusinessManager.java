@@ -34,7 +34,7 @@ public class BusinessManager
         new RefreshAsyncTask(callback).execute(url, cityCode);
     }
     
-    class RefreshAsyncTask extends AsyncTask<String, Integer, List<String>>
+    class RefreshAsyncTask extends AsyncTask<String, Integer, ArrayList<String>>
     {
         public ICallback<WeatherInfoModule> mCallback;
         
@@ -45,10 +45,10 @@ public class BusinessManager
             this.mCallback = callback;
         }
         
-        protected List<String> doInBackground(String... params)
+        protected ArrayList<String> doInBackground(String... params)
         {
             HttpURLConnection connection = null;
-            List<String> allWeatherInfo = new ArrayList<String>();
+            ArrayList<String> allWeatherInfo = new ArrayList<String>();
             try
             {
                 URL url = new URL(params[0]);
@@ -104,8 +104,6 @@ public class BusinessManager
             }
             catch (IOException e)
             {
-                // �ص�onError()����
-                // listener.onErr or(e);
                 e.printStackTrace();
                 isSucceed = false;
             }

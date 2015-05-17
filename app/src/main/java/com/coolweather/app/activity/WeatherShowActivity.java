@@ -69,7 +69,7 @@ public class WeatherShowActivity extends BaseSampleActivity {
 
 
     private List<Weather> weatherList = new ArrayList<Weather>();
-    private TextView city_name_view;
+    //private TextView city_name_view;
     private TextView today_date_view;
     private TextView today_sunny_view;
     private ImageView today_image_view;
