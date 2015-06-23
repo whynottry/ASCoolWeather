@@ -34,7 +34,7 @@ public class BusinessManager
         new RefreshAsyncTask(callback).execute(url, cityCode);
     }
     
-    class RefreshAsyncTask extends AsyncTask<String, Integer, ArrayList<String>>
+    class RefreshAsyncTask extends AsyncTask<String, Integer, WeatherInfoModule>
     {
         public ICallback<WeatherInfoModule> mCallback;
         
@@ -45,10 +45,12 @@ public class BusinessManager
             this.mCallback = callback;
         }
         
-        protected ArrayList<String> doInBackground(String... params)
+        protected WeatherInfoModule doInBackground(String... params)
         {
             HttpURLConnection connection = null;
             ArrayList<String> allWeatherInfo = new ArrayList<String>();
+            WeatherInfoModule wim = WeatherInfoModule.getInstance();
+
             try
             {
                 URL url = new URL(params[0]);
@@ -93,10 +95,12 @@ public class BusinessManager
                         }
                         allWeatherInfo.add(weather);
                     }
+                    wim.buildWeatherInfo(allWeatherInfo);
                     isSucceed = true;
                 }
                 catch (Exception e)
                 {
+                    Log.e("Thread","connection.getInputStream error");
                     e.printStackTrace();
                     isSucceed = false;
                 }
@@ -114,7 +118,7 @@ public class BusinessManager
                     connection.disconnect();
                 }
             }
-            return allWeatherInfo;
+            return wim;
         }
         
         protected void onProgressUpdate(Integer... progress)
@@ -122,9 +126,9 @@ public class BusinessManager
             // setProgressPercent(progress[0]);
         }
         
-        protected void onPostExecute(ArrayList<String> allWeatherInfo)
+        protected void onPostExecute(WeatherInfoModule wim)
         {
-            WeatherInfoModule wim = WeatherInfoModule.buildWeatherInfo(allWeatherInfo);
+
             if (mCallback != null)
             {
                 if (isSucceed)

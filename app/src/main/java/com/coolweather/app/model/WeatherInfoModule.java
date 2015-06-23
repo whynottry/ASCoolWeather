@@ -1,10 +1,15 @@
 package com.coolweather.app.model;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.coolweather.app.R;
 import com.google.gson.Gson;
@@ -34,74 +39,118 @@ public class WeatherInfoModule implements Serializable
     public String m_todayWindView;
     public String m_todayHumidityView;
     public List<Weather> weatherList = new ArrayList<Weather>();
+    boolean flag = false;
 
-    public static WeatherInfoModule buildWeatherInfo(ArrayList<String> weatherInfoParams)
-    {
-        WeatherInfoModule info = new WeatherInfoModule();
-        info.mCityName = getParam(1, weatherInfoParams);
-        String temp;
-        String[] tempArray;
+    private static final WeatherInfoModule wif = new WeatherInfoModule();
+    private final Lock lock = new ReentrantLock();
+    private final Condition write = lock.newCondition();
+    private final Condition read = lock.newCondition();
 
-        temp = getParam(3, weatherInfoParams);
-        tempArray = temp.split(" ");
+    public Lock getLock(){
+        return lock;
+    }
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
-        Date curDate    =   new Date(System.currentTimeMillis());//获取当前时间
-        String    str    =    formatter.format(curDate);
-        str += info.mCityName;
-        info.m_todayDataView = str;
+    public Condition getWriteCond(){
+        return write;
+    }
 
-        //today_date_view.setText(str);
-        //editor.putString("today_date_view",str);
-        temp = getParam(7, weatherInfoParams);
-        tempArray = temp.split(" ");
-        if(tempArray.length >= 2) {
-            info.m_todaySunnyView = tempArray[1];
-        }else {
-            info.m_todaySunnyView = "";
-        }
-        temp = getParam(10, weatherInfoParams);
-        info.m_todayImageId = info.getResId(temp);
-        temp = getParam(5,weatherInfoParams);
-        tempArray = temp.split("；");
-        if(tempArray.length >= 2) {
-            info.m_todayAirView = tempArray[0];
-            info.m_todayUltravioletView = tempArray[1];
-        }else{
-            info.m_todayAirView = "";
-            info.m_todayUltravioletView = "";
-        }
-        temp = getParam(4,weatherInfoParams);
-        tempArray = temp.split("；");
-        String[] tempArray2;
-        if(tempArray.length>=3) {
-            tempArray2 = tempArray[0].split("：");
-            if(tempArray2.length >=3) {
-                info.m_todayTempreatureView = tempArray2[2];
-                tempArray2 = tempArray[1].split("：");
-                info.m_todayWindView = tempArray2[1];
+    public Condition getReadCond(){
+        return read;
+    }
+
+    private WeatherInfoModule(){};
+
+    public static WeatherInfoModule getInstance(){
+        return wif;
+    }
+
+    public void setFlag(boolean flag){
+        this.flag = flag;
+    }
+
+    public void buildWeatherInfo(ArrayList<String> weatherInfoParams) throws InterruptedException {
+        lock.lock();
+        //flag为false的时候，代表内容未更新，可以写操作
+        try {
+
+            if(flag) {   //flag为true，则不能写
+                Log.i("Thread","input+++++++++++wait");
+                //wif.wait();
+                write.await();
             }
-            info.m_todayHumidityView = tempArray[2];
-        }
+            Log.i("Thread","++++input");
+            wif.mCityName = getParam(1, weatherInfoParams);
+            String temp;
+            String[] tempArray;
 
-        info.weatherList.clear();
-        String key = "";
-        for(int i = 0; i < 5; i++){
-            Weather weather = new Weather();
-            temp = getParam(7+5*i,weatherInfoParams);
-
+            temp = getParam(3, weatherInfoParams);
             tempArray = temp.split(" ");
-            weather.setDate(tempArray[0]);
-            weather.setSunny(tempArray[1]);
-            temp = getParam(8+5*i,weatherInfoParams);
-            weather.setTemperature(temp);
-            temp = getParam(9+5*i,weatherInfoParams);
-            weather.setWind(temp);
-            info.weatherList.add(weather);
+
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy年MM月dd日    HH:mm:ss     ");
+            Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+            String str = formatter.format(curDate);
+            str += wif.mCityName;
+            wif.m_todayDataView = str;
+
+            //today_date_view.setText(str);
+            //editor.putString("today_date_view",str);
+            temp = getParam(7, weatherInfoParams);
+            tempArray = temp.split(" ");
+            if (tempArray.length >= 2) {
+                wif.m_todaySunnyView = tempArray[1];
+            } else {
+                wif.m_todaySunnyView = "";
+            }
+            temp = getParam(10, weatherInfoParams);
+            wif.m_todayImageId = wif.getResId(temp);
+            temp = getParam(5, weatherInfoParams);
+            tempArray = temp.split("；");
+            if (tempArray.length >= 2) {
+                wif.m_todayAirView = tempArray[0];
+                wif.m_todayUltravioletView = tempArray[1];
+            } else {
+                wif.m_todayAirView = "";
+                wif.m_todayUltravioletView = "";
+            }
+            temp = getParam(4, weatherInfoParams);
+            tempArray = temp.split("；");
+            String[] tempArray2;
+            if (tempArray.length >= 3) {
+                tempArray2 = tempArray[0].split("：");
+                if (tempArray2.length >= 3) {
+                    wif.m_todayTempreatureView = tempArray2[2];
+                    tempArray2 = tempArray[1].split("：");
+                    wif.m_todayWindView = tempArray2[1];
+                }
+                wif.m_todayHumidityView = tempArray[2];
+            }
+
+            wif.weatherList.clear();
+            String key = "";
+            for (int i = 0; i < 5; i++) {
+                Weather weather = new Weather();
+                temp = getParam(7 + 5 * i, weatherInfoParams);
+
+                temp = getParam(8 + 5 * i, weatherInfoParams);
+                weather.setTemperature(temp);
+                temp = getParam(9 + 5 * i, weatherInfoParams);
+                weather.setWind(temp);
+                wif.weatherList.add(weather);
+            }
+
+            flag = true;
+            read.signalAll();
+        }finally {
+            lock.unlock();
         }
+    }
 
+    public synchronized void changeFlagFalse(){
+        wif.flag = false;
+    }
 
-        return info;
+    public boolean getFlag(){
+        return flag;
     }
     
     public static String getParam(int index, ArrayList<String> weatherInfoParams)
