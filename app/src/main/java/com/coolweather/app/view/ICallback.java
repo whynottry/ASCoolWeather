@@ -1,4 +1,4 @@
-package com.coolweather.app.model;
+package com.coolweather.app.view;
 
 public interface ICallback<T>
 {

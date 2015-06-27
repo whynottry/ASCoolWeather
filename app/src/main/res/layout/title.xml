@@ -9,7 +9,7 @@
         android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/home"/>
+        android:background="@drawable/home_add"/>
     <TextView
         android:id="@+id/title_text"
         android:layout_width="0dip"
@@ -26,5 +26,5 @@
         android:id="@+id/refresh_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/share"/>
+        android:background="@drawable/home_del"/>
 </LinearLayout>

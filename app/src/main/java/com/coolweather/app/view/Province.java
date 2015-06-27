@@ -1,4 +1,4 @@
-package com.coolweather.app.model;
+package com.coolweather.app.view;
 
 /**
  * Created by Star on 2015/4/9.

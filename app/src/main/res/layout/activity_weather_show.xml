@@ -13,11 +13,6 @@
         android:layout_height="wrap_content"
         ></com.coolweather.app.util.TitleLayout>
 
-    <!--<com.coolweather.app.refreash.RefreshLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!--</com.coolweather.app.refreash.RefreshLayout>-->
-
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="fill_parent"

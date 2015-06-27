@@ -1,10 +1,8 @@
 package com.coolweather.app.refreash;
 
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,34 +10,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.coolweather.app.R;
-import com.coolweather.app.model.BusinessManager;
-import com.coolweather.app.model.City;
-import com.coolweather.app.model.ICallback;
-import com.coolweather.app.model.Weather;
-import com.coolweather.app.model.WeatherInfoModule;
+import com.coolweather.app.view.BusinessManager;
+import com.coolweather.app.view.City;
+import com.coolweather.app.view.ICallback;
+import com.coolweather.app.view.Weather;
+import com.coolweather.app.view.WeatherInfoModule;
 import com.coolweather.app.util.WeatherAdapterUtil;
 import com.google.gson.Gson;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
 * Created by Star on 2015/5/10.
@@ -101,7 +83,7 @@ public class MyWeatherFragment extends Fragment {
         mCurrentWIM.getLock().lock();
         try {
             if (!mCurrentWIM.getFlag()) {
-                Log.i("Thread", "output---wait");
+//                Log.i("Thread", "output---wait");
                 mCurrentWIM.getReadCond().await();
             }
             Log.i("Thread", "output");
@@ -131,22 +113,22 @@ public class MyWeatherFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.refreshlayout,container,false);
+//        TextView temp = (TextView) view.findViewById(R.id.home_btn);
         initRefreshPageView();
         mCurrentWIM = WeatherInfoModule.getInstance();
-        //getAllWeatherInfo();
-        //mCurrentWIM = readAllWeatherInfoFromFileCache(city_code);
-        if(mCurrentWIM.getFlag())
-        {
-            try {
-                setFragmentContext();
-            }  catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else
-        {
+//        if(mCurrentWIM.getFlag())
+//        {
+//            try {
+//                setFragmentContext();
+//            }  catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        else
+//        {
             getAllWeatherInfoByServer(city_code);
-        }
+//        }
+
         refreshableView.setRefreshableHelper(new RefreshableHelper() {
 
             @Override
@@ -182,6 +164,7 @@ public class MyWeatherFragment extends Fragment {
                     case RefreshableView.STATE_REFRESHING:
                         tv.setText("正在刷新");
                         tv.setVisibility(View.VISIBLE);
+//                        Log.i("Thread","正在刷新...");
 //                        Log.i("Thread","Refreash:pageNum = "+pageNum+"");
 //                        Log.i("Thread","Refreash:city_code = "+city_code+"");
                         getAllWeatherInfoByServer(city_code);
@@ -240,14 +223,14 @@ public class MyWeatherFragment extends Fragment {
 
     public void getAllWeatherInfoByServer(final String cityCode){
         String url = WEATHER_QUERY_URL+cityCode;
-        Log.i("Thread",cityCode+"");
+//        Log.i("Thread",cityCode+"");
         new BusinessManager(getActivity()).getWeather(url, cityCode, new ICallback<WeatherInfoModule>()
         {
             
             @Override
             public void onSuccess(WeatherInfoModule result)
             {
-                saveSelCityInfo(cityCode, result);
+                //saveSelCityInfo(cityCode, result);
                 mCurrentWIM = result;
                 //初始化界面将取到的数据设置到界面上
                 try {
@@ -255,25 +238,11 @@ public class MyWeatherFragment extends Fragment {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//                today_date_view.setText(mCurrentWIM.m_todayDataView);
-//                today_sunny_view.setText(mCurrentWIM.m_todaySunnyView);
-//                today_image_view.setImageResource(mCurrentWIM.m_todayImageId);
-//                today_air_view.setText(mCurrentWIM.m_todayAirView);
-//                today_ultraviolet_view.setText(mCurrentWIM.m_todayUltravioletView);
-//                today_tempreature_view.setText(mCurrentWIM.m_todayTempreatureView);
-//                today_wind_view.setText(mCurrentWIM.m_todayWindView);
-//                today_humidity_view.setText(mCurrentWIM.m_todayHumidityView);
-//
-//                adapter = new WeatherAdapterUtil(getActivity(),R.layout.weather_item,mCurrentWIM.weatherList);
-//                ListView listView = (ListView)view.findViewById(R.id.weather_list);
-//                listView.setAdapter(adapter);
-//                setListViewHeightBasedOnChildren(listView);
             }
             
             @Override
             public void onFail(String errorMsg)
             {
-//                Toast.makeText(context, errorMsg, duration).show();
             }
         });
     }

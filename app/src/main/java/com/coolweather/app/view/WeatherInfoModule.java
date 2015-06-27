@@ -1,6 +1,4 @@
-package com.coolweather.app.model;
-
-import android.util.Log;
+package com.coolweather.app.view;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -74,11 +72,11 @@ public class WeatherInfoModule implements Serializable
         try {
 
             if(flag) {   //flag为true，则不能写
-                Log.i("Thread","input+++++++++++wait");
+                //Log.i("Thread","input+++++++++++wait");
                 //wif.wait();
                 write.await();
             }
-            Log.i("Thread","++++input");
+//            Log.i("Thread","++++input");
             wif.mCityName = getParam(1, weatherInfoParams);
             String temp;
             String[] tempArray;
@@ -92,8 +90,6 @@ public class WeatherInfoModule implements Serializable
             str += wif.mCityName;
             wif.m_todayDataView = str;
 
-            //today_date_view.setText(str);
-            //editor.putString("today_date_view",str);
             temp = getParam(7, weatherInfoParams);
             tempArray = temp.split(" ");
             if (tempArray.length >= 2) {

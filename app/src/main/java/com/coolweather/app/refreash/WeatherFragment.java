@@ -14,8 +14,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.coolweather.app.R;
-import com.coolweather.app.model.City;
-import com.coolweather.app.model.Weather;
+import com.coolweather.app.view.City;
+import com.coolweather.app.view.Weather;
 import com.coolweather.app.util.WeatherAdapterUtil;
 
 import org.w3c.dom.Document;
@@ -218,7 +218,7 @@ public class WeatherFragment extends Fragment {
                             allWeatherInfo.add(weather);
                         }
                         //写文件
-                        saveSelCityInfo(urls[1]);
+                        //saveSelCityInfo(urls[1]);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

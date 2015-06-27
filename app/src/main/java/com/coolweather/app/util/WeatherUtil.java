@@ -1,30 +1,11 @@
 package com.coolweather.app.util;
 
-import android.app.Application;
-import android.content.Context;
-import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.coolweather.app.model.CoolWeatherDB;
-import com.coolweather.app.model.Province;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import com.coolweather.app.view.CoolWeatherDB;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Created by Star on 2015/4/9.

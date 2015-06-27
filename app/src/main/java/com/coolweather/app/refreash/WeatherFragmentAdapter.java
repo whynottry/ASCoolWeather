@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.coolweather.app.model.City;
+import com.coolweather.app.view.City;
 
 import java.util.List;
 

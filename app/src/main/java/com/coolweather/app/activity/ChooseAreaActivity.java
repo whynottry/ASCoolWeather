@@ -14,10 +14,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.coolweather.app.R;
-import com.coolweather.app.model.City;
-import com.coolweather.app.model.CoolWeatherDB;
-import com.coolweather.app.model.Province;
+import com.coolweather.app.view.City;
+import com.coolweather.app.view.CoolWeatherDB;
+import com.coolweather.app.view.Province;
 import com.coolweather.app.util.ActivityCollector;
+import com.coolweather.app.util.Constants;
 import com.coolweather.app.util.HttpUtil;
 
 import org.w3c.dom.Document;
@@ -77,6 +78,8 @@ public class ChooseAreaActivity extends Activity {
                     Intent intent = new Intent(ChooseAreaActivity.this, WeatherShowActivity.class);
                     intent.putExtra("cityCode",selCity.getCityCode());
                     intent.putExtra("cityName",selCity.getCityName());
+                    int i = Constants.ADD_CITY;
+                    intent.putExtra("citySelType", i);
                     startActivity(intent);
                 }
             }
