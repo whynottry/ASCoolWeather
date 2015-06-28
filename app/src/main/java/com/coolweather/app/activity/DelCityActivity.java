@@ -3,19 +3,15 @@ package com.coolweather.app.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.coolweather.app.R;
 import com.coolweather.app.util.Constants;
 import com.coolweather.app.util.MyApplication;
-import com.coolweather.app.view.City;
 import com.coolweather.app.view.SlideCutListView;
 
 import java.util.ArrayList;
@@ -64,6 +60,7 @@ public class DelCityActivity extends Activity  implements SlideCutListView.Remov
         String cityName = adapter.getItem(position);
         adapter.remove(cityName);
         ((MyApplication)getApplication()).delCity(cityName);
+        ((MyApplication)getApplication()).saveCityArray();
         switch (direction) {
             case RIGHT:
                 Toast.makeText(this, "向右删除  " + position, Toast.LENGTH_SHORT).show();

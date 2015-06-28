@@ -1,4 +1,4 @@
-package com.coolweather.app.view;
+package com.coolweather.app.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;

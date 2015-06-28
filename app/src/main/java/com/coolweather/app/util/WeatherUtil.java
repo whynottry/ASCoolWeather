@@ -1,7 +1,5 @@
 package com.coolweather.app.util;
 
-import com.coolweather.app.view.CoolWeatherDB;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;

@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.coolweather.app.R;
-import com.coolweather.app.view.Weather;
 
 import java.util.List;
 

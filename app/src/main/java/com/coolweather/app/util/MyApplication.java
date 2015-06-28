@@ -2,8 +2,7 @@ package com.coolweather.app.util;
 
 import android.app.Application;
 import android.content.SharedPreferences;
-
-import com.coolweather.app.view.City;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -64,11 +63,12 @@ public class MyApplication  extends Application {
         citys_sel_list.clear();
         String cityTemp;
         String[] tempArray;
-        City city = new City();
         int size = pref.getInt("Status_size", 0);
+//        Log.i("Thread", "getCityArray:size = " + size);
         for(int i=0;i<size;i++) {
             cityTemp = pref.getString("Status_" + i, null);
             tempArray = cityTemp.split("_");
+            City city = new City();
             city.setCityCode(tempArray[0]);
             city.setCityName(tempArray[1]);
             citys_sel_list.add(city);
@@ -81,8 +81,9 @@ public class MyApplication  extends Application {
         editor.clear();
         editor.putInt("Status_size",citys_sel_list.size()); /*sKey is an array*/
 
+//        Log.i("Thread", "saveCityArray:" + citys_sel_list.size());
         for(int i=0;i<citys_sel_list.size();i++) {
-            editor.remove("Status_" + i);
+            //editor.remove("Status_" + i);
             editor.putString("Status_" + i, citys_sel_list.get(i).getCityCode()
                     +"_"+citys_sel_list.get(i).getCityName());
         }

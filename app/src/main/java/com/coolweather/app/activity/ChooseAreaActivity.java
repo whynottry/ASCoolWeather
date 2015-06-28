@@ -14,9 +14,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.coolweather.app.R;
-import com.coolweather.app.view.City;
-import com.coolweather.app.view.CoolWeatherDB;
-import com.coolweather.app.view.Province;
+import com.coolweather.app.util.City;
+import com.coolweather.app.util.CoolWeatherDB;
+import com.coolweather.app.util.Province;
 import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.Constants;
 import com.coolweather.app.util.HttpUtil;

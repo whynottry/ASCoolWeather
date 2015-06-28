@@ -12,11 +12,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.coolweather.app.R;
-import com.coolweather.app.view.BusinessManager;
-import com.coolweather.app.view.City;
-import com.coolweather.app.view.ICallback;
-import com.coolweather.app.view.Weather;
-import com.coolweather.app.view.WeatherInfoModule;
+import com.coolweather.app.util.BusinessManager;
+import com.coolweather.app.util.City;
+import com.coolweather.app.util.ICallback;
+import com.coolweather.app.util.Weather;
+import com.coolweather.app.util.WeatherInfoModule;
 import com.coolweather.app.util.WeatherAdapterUtil;
 import com.google.gson.Gson;
 
@@ -83,7 +83,7 @@ public class MyWeatherFragment extends Fragment {
         mCurrentWIM.getLock().lock();
         try {
             if (!mCurrentWIM.getFlag()) {
-//                Log.i("Thread", "output---wait");
+                Log.i("Thread", "output---wait");
                 mCurrentWIM.getReadCond().await();
             }
             Log.i("Thread", "output");
@@ -95,7 +95,9 @@ public class MyWeatherFragment extends Fragment {
             today_tempreature_view.setText(mCurrentWIM.m_todayTempreatureView);
             today_wind_view.setText(mCurrentWIM.m_todayWindView);
             today_humidity_view.setText(mCurrentWIM.m_todayHumidityView);
-
+            Log.i("Thread", "output:today_sunny_view="+mCurrentWIM.mCityName);
+            Log.i("Thread", "output:today_sunny_view="+mCurrentWIM.m_todaySunnyView);
+            Log.i("Thread", "output:mCurrentWIM.weatherList.size()="+mCurrentWIM.weatherList.size()+"");
             adapter = new WeatherAdapterUtil(getActivity(), R.layout.weather_item, mCurrentWIM.weatherList);
 
             ListView listView = (ListView) view.findViewById(R.id.weather_list);
@@ -223,14 +225,12 @@ public class MyWeatherFragment extends Fragment {
 
     public void getAllWeatherInfoByServer(final String cityCode){
         String url = WEATHER_QUERY_URL+cityCode;
-//        Log.i("Thread",cityCode+"");
         new BusinessManager(getActivity()).getWeather(url, cityCode, new ICallback<WeatherInfoModule>()
         {
             
             @Override
             public void onSuccess(WeatherInfoModule result)
             {
-                //saveSelCityInfo(cityCode, result);
                 mCurrentWIM = result;
                 //初始化界面将取到的数据设置到界面上
                 try {

@@ -14,8 +14,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.coolweather.app.R;
-import com.coolweather.app.view.City;
-import com.coolweather.app.view.Weather;
+import com.coolweather.app.util.City;
+import com.coolweather.app.util.Weather;
 import com.coolweather.app.util.WeatherAdapterUtil;
 
 import org.w3c.dom.Document;

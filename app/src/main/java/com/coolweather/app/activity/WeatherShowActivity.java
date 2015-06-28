@@ -2,10 +2,8 @@ package com.coolweather.app.activity;
 
 //import android.app.ListFragment;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -13,15 +11,13 @@ import android.widget.TextView;
 
 import com.coolweather.app.R;
 import com.coolweather.app.circlePageIndicator.CirclePageIndicator;
-import com.coolweather.app.view.City;
+import com.coolweather.app.util.City;
 import com.coolweather.app.refreash.WeatherFragmentAdapter;
 import com.coolweather.app.util.ActivityCollector;
 import com.coolweather.app.util.Constants;
 import com.coolweather.app.util.MyApplication;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class WeatherShowActivity extends BaseSampleActivity {
 
@@ -126,6 +122,7 @@ public class WeatherShowActivity extends BaseSampleActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        ((MyApplication)getApplication()).saveCityArray();
         ActivityCollector.finishAllActivities();
     }
 
@@ -134,6 +131,5 @@ public class WeatherShowActivity extends BaseSampleActivity {
         locationCity.setCityName("江宁");
         locationCity.setCityCode("1984");
         return locationCity;
-
     }
 }
